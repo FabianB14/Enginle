@@ -424,26 +424,26 @@
     <hr class="divider" />
     <div class="example-row">
       <div class="mini-tile green">S</div>
-      <div class="mini-tile">H</div>
+      <div class="mini-tile">T</div>
       <div class="mini-tile">A</div>
-      <div class="mini-tile">D</div>
-      <div class="mini-tile">E</div>
+      <div class="mini-tile">C</div>
+      <div class="mini-tile">K</div>
     </div>
     <p><b style="color:var(--green)">S</b> is in the word and in the correct spot.</p>
     <div class="example-row">
       <div class="mini-tile">P</div>
+      <div class="mini-tile">R</div>
       <div class="mini-tile yellow">I</div>
-      <div class="mini-tile">X</div>
-      <div class="mini-tile">E</div>
-      <div class="mini-tile">L</div>
+      <div class="mini-tile">N</div>
+      <div class="mini-tile">T</div>
     </div>
     <p><b style="color:var(--yellow)">I</b> is in the word but in the wrong spot.</p>
     <div class="example-row">
-      <div class="mini-tile">V</div>
-      <div class="mini-tile">O</div>
-      <div class="mini-tile gray">X</div>
+      <div class="mini-tile">R</div>
       <div class="mini-tile">E</div>
-      <div class="mini-tile">L</div>
+      <div class="mini-tile">D</div>
+      <div class="mini-tile">U</div>
+      <div class="mini-tile gray">X</div>
     </div>
     <p><b style="color:var(--text-dim)">X</b> is not in the word.</p>
     <hr class="divider" />
@@ -469,17 +469,24 @@
 (function () {
   "use strict";
 
-  // ---- Answer word list (all exactly 5 letters) ----
-  var WORDS = [
-    "SPAWN","FRAME","TWEEN","SCENE","ASSET","BUILD","DEBUG","PIXEL","LEVEL","VOXEL",
-    "SHADE","RIGID","FORCE","INPUT","AUDIO","LIGHT","DEPTH","PATCH","MERGE","CLONE",
-    "ATLAS","BAKED","DELTA","RANGE","ENEMY","BUFFS","NERFS","GUILD","RAIDS","DROPS",
-    "PARRY","BLOCK","RUNES","SWORD","ARMOR","SHARD","COINS","SCORE","TIMER","MENUS",
-    "MODEL","BONES","TRACK","CURVE","NODES","ENUMS","FLOAT","BYTES","LERPS","CLAMP",
-    "ROUND","POOLS","TICKS","FIXED","AWAKE","START","COLOR","ALPHA","LAYER","MASKS",
-    "TRAIL","EMITS","BURST","GODOT","BLEND","CRAFT","QUEST","STATE","COMBO","DODGE",
-    "LOOPS","ARRAY","CACHE","ASYNC","SHARP","TILES","DASH5"
-  ];
+  // ---- Answer word list ----
+  // The 77 answers (all 5-letter game-dev terms) are stored obfuscated so the
+  // daily word isn't sitting in plain sight for anyone who opens "View Source".
+  // They're XOR-masked then Base64-encoded; decoded into memory at runtime.
+  // This stops casual spoiling — it is NOT real cryptography (a determined dev
+  // can still reverse it), which is fine for a no-backend static game.
+  var PACKED =
+    "CH9SYBUDVWUaYlYbD3hWchUDQHQeYVYbGnxAcg8DUWISY1cbH2pRYhwDQ34Dal8bF2pFchcDRXgDal8bCGdScx4DQX4cZlcbHWBBdB4DWnkLekcbGnpXfhQDX34cZ0cbH2pDYxMDQ3YPbFsbFmpBcB4DUHsUYVYbGntfdggDUXYQalcbH2pfYxoDQXYVaFYbHmFWegIDUWIdaUAbFWpBcQgDVGISY1cbCW5acwgDV2UUf0AbC25BZQIDUXsUbFgbCXpdcggDQGAUfVcbGn1eeAkDQH8afVcbGGBaeQgDQHQUfVYbD2ZecgkDXnIVekAbFmBXchcDUXgVakAbD31SdBADUGIJeVYbFWBXcggDVnkOYkAbHWNcdg8DUW4PakAbF2pBZwgDUHsaYkMbCWBGeR8DQ3gUY0AbD2ZQfAgDVX4DalcbGnhSfB4DQGMafUcbGGBfeAkDUnsLZ1IbF25KcgkDXnYIZEAbD31SfhcDVnoSe0AbGXpBZA8DVHgfYEcbGWNWeR8DUGUaaUcbCnpWZA8DQGMae1YbGGBedRQDV3gfaFYbF2BcZwgDUmUJbkobGG5Qfx4DUmQCYVAbCGdSZQsDR34XakAbH25Af24=";
+  var MASK = [0x5b, 0x2f, 0x13, 0x37];
+  function unpackWords(packed) {
+    var bin = atob(packed);
+    var out = "";
+    for (var i = 0; i < bin.length; i++) {
+      out += String.fromCharCode(bin.charCodeAt(i) ^ MASK[i % MASK.length]);
+    }
+    return out.split(",");
+  }
+  var WORDS = unpackWords(PACKED);
 
   var ROWS = 6, COLS = 5;
   var STORE_KEY = "enginle_v1";
